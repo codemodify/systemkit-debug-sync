@@ -14,7 +14,7 @@ func (thisRef *Mutex) Lock() {
 
 func (thisRef *Mutex) Unlock() {
 	thisRef.mu.Unlock()
-	if !Opts.Disable {
+	if !TraceOptions.Disable {
 		postUnlock(thisRef)
 	}
 }

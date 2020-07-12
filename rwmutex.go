@@ -9,12 +9,12 @@ type RWMutex struct {
 }
 
 func (thisRef *RWMutex) Lock() {
-	lock(thisRef.mu.Lock, thisRef)
+	internal.lock(thisRef.mu.Lock, thisRef)
 }
 
 func (thisRef *RWMutex) Unlock() {
 	thisRef.mu.Unlock()
-	if !Opts.Disable {
+	if !TraceOptions.Disable {
 		postUnlock(thisRef)
 	}
 }
@@ -25,7 +25,7 @@ func (thisRef *RWMutex) RLock() {
 
 func (thisRef *RWMutex) RUnlock() {
 	thisRef.mu.RUnlock()
-	if !Opts.Disable {
+	if !TraceOptions.Disable {
 		postUnlock(thisRef)
 	}
 }
