@@ -16,8 +16,8 @@ type TraceOpt struct {
 	OnPotentialDeadlock       func()        // called each time a potential deadlock is detected -- either based on lock order or on lock wait time
 	MaxMapSize                int           // Will keep MaxMapSize lock pairs (happens before // happens after) in the map, resets once the threshold is reached
 	PrintAllCurrentGoroutines bool          // Will dump stacktraces of all goroutines when inconsistent locking is detected
-	mu                        *sync.Mutex   // Protects the LogBuf
 	LogBuf                    io.Writer     // Will print deadlock info to log buffer
+	logBufMutex               *sync.Mutex   // Protects the LogBuf
 }
 
 var TraceOptions = TraceOpt{
@@ -27,6 +27,6 @@ var TraceOptions = TraceOpt{
 	OnPotentialDeadlock:       func() { os.Exit(2) },
 	MaxMapSize:                1024 * 64,
 	PrintAllCurrentGoroutines: true,
-	mu:                        &sync.Mutex{},
+	logBufMutex:               &sync.Mutex{},
 	LogBuf:                    os.Stderr,
 }

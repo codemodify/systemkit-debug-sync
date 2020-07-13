@@ -9,7 +9,7 @@ type RWMutex struct {
 }
 
 func (thisRef *RWMutex) Lock() {
-	internal.lock(thisRef.mu.Lock, thisRef)
+	lock(thisRef.mu.Lock, thisRef)
 }
 
 func (thisRef *RWMutex) Unlock() {
@@ -33,3 +33,11 @@ func (thisRef *RWMutex) RUnlock() {
 func (thisRef *RWMutex) RLocker() sync.Locker {
 	return (*rlocker)(thisRef)
 }
+
+// ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
+// rlocker
+// ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~
+type rlocker RWMutex
+
+func (r *rlocker) Lock()   { (*RWMutex)(r).RLock() }
+func (r *rlocker) Unlock() { (*RWMutex)(r).RUnlock() }

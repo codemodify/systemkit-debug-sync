@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
-	syncdebug "github.com/codemodify/systemkit-syncdebug"
+	debugSync "github.com/codemodify/systemkit-debug-sync"
 )
 
 func TestNoDeadlocks(t *testing.T) {
 	defer restore()()
-	syncdebug.TraceOptions.DeadlockTimeout = time.Millisecond * 5000
-	var a syncdebug.RWMutex
-	var b syncdebug.Mutex
-	var c syncdebug.RWMutex
+	debugSync.TraceOptions.DeadlockTimeout = time.Millisecond * 5000
+	var a debugSync.RWMutex
+	var b debugSync.Mutex
+	var c debugSync.RWMutex
 	var wg sync.WaitGroup
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
@@ -63,13 +63,13 @@ func TestNoDeadlocks(t *testing.T) {
 
 func TestLockOrder(t *testing.T) {
 	defer restore()()
-	syncdebug.TraceOptions.DeadlockTimeout = 0
+	debugSync.TraceOptions.DeadlockTimeout = 0
 	var deadlocks uint32
-	syncdebug.TraceOptions.OnPotentialDeadlock = func() {
+	debugSync.TraceOptions.OnPotentialDeadlock = func() {
 		atomic.AddUint32(&deadlocks, 1)
 	}
-	var a syncdebug.RWMutex
-	var b syncdebug.Mutex
+	var a debugSync.RWMutex
+	var b debugSync.Mutex
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
@@ -96,13 +96,13 @@ func TestLockOrder(t *testing.T) {
 
 func TestHardDeadlock(t *testing.T) {
 	defer restore()()
-	syncdebug.TraceOptions.DisableLockOrderDetection = true
-	syncdebug.TraceOptions.DeadlockTimeout = time.Millisecond * 20
+	debugSync.TraceOptions.DisableLockOrderDetection = true
+	debugSync.TraceOptions.DeadlockTimeout = time.Millisecond * 20
 	var deadlocks uint32
-	syncdebug.TraceOptions.OnPotentialDeadlock = func() {
+	debugSync.TraceOptions.OnPotentialDeadlock = func() {
 		atomic.AddUint32(&deadlocks, 1)
 	}
-	var mu syncdebug.Mutex
+	var mu debugSync.Mutex
 	mu.Lock()
 	ch := make(chan struct{})
 	go func() {
@@ -124,12 +124,12 @@ func TestHardDeadlock(t *testing.T) {
 
 func Test_RWMutex(t *testing.T) {
 	defer restore()()
-	syncdebug.TraceOptions.DeadlockTimeout = time.Millisecond * 20
+	debugSync.TraceOptions.DeadlockTimeout = time.Millisecond * 20
 	var deadlocks uint32
-	syncdebug.TraceOptions.OnPotentialDeadlock = func() {
+	debugSync.TraceOptions.OnPotentialDeadlock = func() {
 		atomic.AddUint32(&deadlocks, 1)
 	}
-	var a syncdebug.RWMutex
+	var a debugSync.RWMutex
 	a.RLock()
 	go func() {
 		// We detect a potential deadlock here.
@@ -157,21 +157,21 @@ func Test_RWMutex(t *testing.T) {
 }
 
 func restore() func() {
-	opts := syncdebug.TraceOptions
+	opts := debugSync.TraceOptions
 	return func() {
-		syncdebug.TraceOptions = opts
+		debugSync.TraceOptions = opts
 	}
 }
 
 func TestLockDuplicate(t *testing.T) {
 	defer restore()()
-	syncdebug.TraceOptions.DeadlockTimeout = 0
+	debugSync.TraceOptions.DeadlockTimeout = 0
 	var deadlocks uint32
-	syncdebug.TraceOptions.OnPotentialDeadlock = func() {
+	debugSync.TraceOptions.OnPotentialDeadlock = func() {
 		atomic.AddUint32(&deadlocks, 1)
 	}
-	var a syncdebug.RWMutex
-	var b syncdebug.Mutex
+	var a debugSync.RWMutex
+	var b debugSync.Mutex
 	go func() {
 		a.RLock()
 		a.Lock()
