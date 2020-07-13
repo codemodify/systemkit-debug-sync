@@ -4,13 +4,9 @@ import (
 	"bytes"
 	"runtime"
 	"strconv"
-
-	"github.com/petermattis/goid"
 )
 
-func goFuncID() int64 {
-	return goid.Get()
-}
+func goFuncID() int64
 
 func goFuncIDFromRawStack(s []byte) int64 {
 
